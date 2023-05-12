@@ -6,9 +6,12 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
-constructor(@InjectRepository(User) private readonly userRepository: Repository<User>){}
 
-async validateUser(details: CreateUserDto) {
+  constructor(
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+  ) {}
+
+  async validateUser(details: CreateUserDto) {
     console.log('AuthService');
     console.log(details);
     const user = await this.userRepository.findOneBy({ email: details.email });
