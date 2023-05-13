@@ -39,7 +39,7 @@ export class AuthController {
     console.log(request.user)
     // return request.user['profile']
     response.redirect(
-      `http://localhost:8080/?email=${request.user['profile']['emails'][0]['value']}&name=${request.user['profile']['displayName']}&picture=${request.user['profile']['photos'][0]['value']}&token=${request.user['accessToken']}`,
+      `http://localhost:8080/homepage/?email=${request.user['profile']['emails'][0]['value']}&name=${request.user['profile']['displayName']}&picture=${request.user['profile']['photos'][0]['value']}&token=${request.user['accessToken']}`,
     );
   }
 
