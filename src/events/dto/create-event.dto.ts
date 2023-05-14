@@ -17,4 +17,6 @@ export class CreateEventDto {
     email:string;
     @IsNotEmpty()
     idCalender: string;
+    @IsNotEmpty()
+    freeStatus:boolean;
 }
