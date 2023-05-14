@@ -57,11 +57,14 @@ export class CalendersService {
   }
 
   async findByEmail(email: string) {
-    const calender = await this.calenderRepository.find({where:{
-      owner: { email: email },
-    },relations:['events']});
+    const calender = await this.calenderRepository.find({
+      where: {
+        owner: { email: email },
+      },
+      relations: ['events'],
+    });
     if (!calender) {
-      throw new NotFoundException('Not found email '+email); 
+      throw new NotFoundException('Not found email ' + email);
     }
     return calender;
   }
@@ -111,11 +114,10 @@ export class CalendersService {
             const umcSaved = await this.uMCRepository.save(umc);
             updatedMember.members.push(umcSaved);
           }
-          
         }
       }
     }
-    if (updatedMember.members.length >0) {
+    if (updatedMember.members.length > 0) {
       const updateCalenderMember = {
         ...calender,
         ...updatedMember,
@@ -130,10 +132,13 @@ export class CalendersService {
     if (!calender) {
       throw new NotFoundException();
     }
-    const umcs = await this.uMCRepository.find({where:{calender:{id: +calender.id}},relations:['user']});
+    const umcs = await this.uMCRepository.find({
+      where: { calender: { id: +calender.id } },
+      relations: ['user'],
+    });
     if (updateCalenderDto.members.length > 0) {
       for (const member of updateCalenderDto.members) {
-        const index = umcs.find(umc=> umc.user.email === member);
+        const index = umcs.find((umc) => umc.user.email === member);
         await this.uMCRepository.remove(index);
       }
     }
@@ -142,6 +147,20 @@ export class CalendersService {
     //   ...updatedMember,
     //   ...calender,
     // };
-    return this.calenderRepository.findOne({where:{id:calender.id},relations:['members','members.user']});
+    return this.calenderRepository.findOne({
+      where: { id: calender.id },
+      relations: ['members', 'members.user'],
+    });
+  }
+
+  async findFriendInCalender(calenderId: number) {
+    const calender = await this.calenderRepository.findOne({
+      where: { id: calenderId },
+      relations: ['members.user'],
+    });
+    if (!calender) {
+      throw new NotFoundException();
+    }
+    return calender;
   }
 }

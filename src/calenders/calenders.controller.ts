@@ -62,4 +62,8 @@ export class CalendersController {
   ) {
     return this.calendersService.deleteMembers(id, updateCalenderDto);
   }
+  @Get('/friend/:id')
+  findFriendInCalender(@Param('id') id: string){
+    return this.calendersService.findFriendInCalender(+id);
+  }
 }
