@@ -101,4 +101,36 @@ export class CalendersService {
     };
     return this.calenderRepository.save(updateCalenderMember);
   }
+
+  async deleteMembers(id: string, updateCalenderDto: UpdateCalenderDto) {
+    const calender = await this.calenderRepository.findOneBy({ id: id });
+    if (!calender) {
+      throw new NotFoundException();
+    }
+    // carete updated object
+    const updatedMember = new Calender();
+
+    if (updateCalenderDto.members.length > 0) {
+      for (const member of updateCalenderDto.members) {
+        const user = await this.userRepository.findOne({
+          where: { email: member },
+        });
+        if (user) {
+          const emailToDelete = member;
+          const index = calender.members.findIndex(
+            (u) => u.email === emailToDelete,
+          );
+          if (index !== -1) {
+            calender.members.splice(index, 1);
+          }
+        }
+      }
+    }
+    const updateCalenderMember = {
+      ...updatedMember,
+      ...calender,
+
+    };
+    return this.calenderRepository.save(updateCalenderMember);
+  }
 }
