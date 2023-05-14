@@ -50,7 +50,9 @@ export class EventsService {
     return `This action returns a #${id} event`;
   }
   async findEventByCalender(idCar: string) {
-    const calenderEvents = await this.calenderRepository.findOneBy({ id: +idCar });
+    const calenderEvents = await this.calenderRepository.findOneBy({
+      id: +idCar,
+    });
     if (!calenderEvents) {
       throw new NotFoundException();
     }
@@ -60,21 +62,32 @@ export class EventsService {
 
   async update(id: number, updateEventDto: UpdateEventDto) {
     const event = await this.eventRepository.findOneBy({ id: +id });
-    if(!event) {
+    if (!event) {
       throw new NotFoundException();
     }
     const updatedEvent = {
       ...event,
-      ...updateEventDto
-    }
+      ...updateEventDto,
+    };
     return this.eventRepository.save(updatedEvent);
   }
 
   async remove(id: string) {
     const event = await this.eventRepository.findOneBy({ id: +id });
-    if(!event) {
+    if (!event) {
       throw new NotFoundException();
     }
     return this.eventRepository.remove(event);
   }
+  async findEventByIdCalender(id: number) {
+    try {
+      const events = await this.eventRepository.find({
+        where: { calender: { id: id } },
+      });
+      return events;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
 }

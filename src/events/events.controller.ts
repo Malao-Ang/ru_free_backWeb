@@ -41,6 +41,7 @@ export class EventsController {
   }
   @Get('calender/:id')
   findEventByCalender(@Param('id') id: string) {
-    return this.eventsService.findEventByCalender(id);
+    // return this.eventsService.findEventByCalender(id);
+    return this.eventsService.findEventByIdCalender(+id);
   }
 }
