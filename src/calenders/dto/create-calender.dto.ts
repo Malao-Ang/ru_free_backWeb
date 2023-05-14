@@ -9,7 +9,7 @@ export class CreateCalenderDto {
   @IsNotEmpty()
   name: string;
   @IsNotEmpty()
-  owner: User;
-  members: User[];
-  events: _Event[];
+  email: string;
+  events?: _Event[];
+  members?:[];
 }

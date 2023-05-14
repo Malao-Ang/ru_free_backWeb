@@ -5,6 +5,10 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -15,13 +19,15 @@ export class Calender {
   id: string;
   @Column()
   name: string;
-  @Column()
+  @ManyToOne(()=> User,(user)=> user.calenders,null)
   owner: User;
-  @Column()
+
+  @ManyToMany(()=>User,(user)=> user.id,null)
+  @JoinTable()
   members: User[];
-  @Column()
-  events: _Event[];
   
+  @OneToMany(()=> _Event,(eve)=> eve.calender,null)
+  events: _Event[];
   @CreateDateColumn()
   createdDate: Date;
   @UpdateDateColumn()

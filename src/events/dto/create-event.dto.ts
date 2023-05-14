@@ -13,4 +13,8 @@ export class CreateEventDto {
     display: string;
     @IsNotEmpty()
     color: string;
+    @IsNotEmpty()
+    email:string;
+    @IsNotEmpty()
+    idCalender: string;
 }

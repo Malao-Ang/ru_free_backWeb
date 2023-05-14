@@ -1,8 +1,12 @@
+import { Calender } from 'src/calenders/entities/calender.entity';
+import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -11,6 +15,7 @@ import {
 export class _Event {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
   @Column()
   title: string;
   @Column()
@@ -19,9 +24,16 @@ export class _Event {
   endDate: Date;
   @Column()
   display: string;
+  @ManyToOne(()=> User,(user)=>user.events)
+  user: User;
   @Column()
   color: string;
+  @ManyToOne(()=> Calender,(car)=> car.events)
+  calender:Calender
+  @Column()
+  freeStatus: boolean;
 
+ 
   @CreateDateColumn()
   createdDate: Date;
   @UpdateDateColumn()
