@@ -2,6 +2,7 @@ import { _Event } from 'src/events/entities/event.entity';
 import { UserMembersCalender } from 'src/user_members_calender/entities/user_members_calender.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
+  BeforeInsert,
   Column,
   CreateDateColumn,
   DeleteDateColumn,
@@ -13,7 +14,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-
+import * as crypto from 'crypto';
 @Entity()
 export class Calender {
   @PrimaryGeneratedColumn()
@@ -26,6 +27,8 @@ export class Calender {
 
   @OneToMany(() => UserMembersCalender, (umc) => umc.calender)
   members: UserMembersCalender[];
+  @Column()
+  code:string;
 
   @OneToMany(() => _Event, (eve) => eve.calender, null)
   events: _Event[];
@@ -35,4 +38,9 @@ export class Calender {
   updatedDate: Date;
   @DeleteDateColumn()
   deletedDate: Date;
+  @BeforeInsert()
+  generateIdCalender() {
+    const code = crypto.randomBytes(6).toString('hex');
+    this.code = code;
+  }
 }

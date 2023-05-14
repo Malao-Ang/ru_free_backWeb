@@ -50,6 +50,10 @@ export class CalendersController {
   ) {
     return this.calendersService.addMembers(id, updateCalenderDto);
   }
+  @Get('/email/:email')
+  findCalenderByEmail(@Param('email') email: string){
+    return this.calendersService.findByEmail(email);
+  }
 
   @Patch('/delete-member/:id')
   deleteMembers(

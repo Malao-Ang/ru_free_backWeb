@@ -18,7 +18,7 @@ export class EventsService {
   ) {}
   async create(createEventDto: CreateEventDto) {
     const calender = await this.calenderRepository.findOneBy({
-      id: parseInt(createEventDto.idCalender),
+      id: createEventDto.idCalender,
     });
     const user = await this.userRepository.findOneBy({
       email: createEventDto.email,
@@ -30,6 +30,8 @@ export class EventsService {
     _event.freeStatus = createEventDto.freeStatus;
     _event.title = createEventDto.title;
     _event.user = user;
+    _event.startDate = new Date(createEventDto.startDate);
+    _event.endDate = new Date(createEventDto.endDate);
 
     if (!calender) {
       throw new NotFoundException();
@@ -37,11 +39,11 @@ export class EventsService {
     if (!user) {
       throw new NotFoundException();
     }
-    return this.calenderRepository.save(_event);
+    return this.eventRepository.save(_event);
   }
 
   findAll() {
-    return `This action returns all events`;
+    return this.eventRepository.find();
   }
 
   findOne(id: string) {

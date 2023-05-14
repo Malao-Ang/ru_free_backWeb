@@ -57,11 +57,11 @@ export class CalendersService {
   }
 
   async findByEmail(email: string) {
-    const calender = await this.calenderRepository.findBy({
+    const calender = await this.calenderRepository.find({where:{
       owner: { email: email },
-    });
+    },relations:['events']});
     if (!calender) {
-      throw new NotFoundException();
+      throw new NotFoundException('Not found email '+email); 
     }
     return calender;
   }

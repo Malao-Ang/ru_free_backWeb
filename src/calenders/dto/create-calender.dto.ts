@@ -12,4 +12,5 @@ export class CreateCalenderDto {
   email: string;
   events?: _Event[];
   members?:[];
+  
 }
