@@ -13,8 +13,8 @@ import {
 
 @Entity()
 export class _Event {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
   title: string;

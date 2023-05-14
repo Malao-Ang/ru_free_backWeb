@@ -18,7 +18,7 @@ export class EventsService {
   ) {}
   async create(createEventDto: CreateEventDto) {
     const calender = await this.calenderRepository.findOneBy({
-      id: createEventDto.idCalender,
+      id: parseInt(createEventDto.idCalender),
     });
     const user = await this.userRepository.findOneBy({
       email: createEventDto.email,
@@ -48,7 +48,7 @@ export class EventsService {
     return `This action returns a #${id} event`;
   }
   async findEventByCalender(idCar: string) {
-    const calenderEvents = await this.calenderRepository.findOneBy({ id: idCar });
+    const calenderEvents = await this.calenderRepository.findOneBy({ id: +idCar });
     if (!calenderEvents) {
       throw new NotFoundException();
     }
@@ -56,8 +56,8 @@ export class EventsService {
     return calenderEvents.events;
   }
 
-  async update(id: string, updateEventDto: UpdateEventDto) {
-    const event = await this.eventRepository.findOneBy({ id: id });
+  async update(id: number, updateEventDto: UpdateEventDto) {
+    const event = await this.eventRepository.findOneBy({ id: +id });
     if(!event) {
       throw new NotFoundException();
     }
@@ -69,7 +69,7 @@ export class EventsService {
   }
 
   async remove(id: string) {
-    const event = await this.eventRepository.findOneBy({ id: id });
+    const event = await this.eventRepository.findOneBy({ id: +id });
     if(!event) {
       throw new NotFoundException();
     }

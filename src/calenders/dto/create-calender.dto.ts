@@ -3,7 +3,7 @@ import { _Event } from 'src/events/entities/event.entity';
 import { User } from 'src/users/entities/user.entity';
 
 export class CreateCalenderDto {
-  id?:string;
+  id?:number;
   @IsString()
   @MinLength(3)
   @IsNotEmpty()

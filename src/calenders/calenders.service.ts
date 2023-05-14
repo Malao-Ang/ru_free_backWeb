@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Calender } from './entities/calender.entity';
 import { Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
+import { UserMembersCalender } from 'src/user_members_calender/entities/user_members_calender.entity';
 
 @Injectable()
 export class CalendersService {
@@ -13,6 +14,8 @@ export class CalendersService {
     private calenderRepository: Repository<Calender>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(UserMembersCalender)
+    private uMCRepository: Repository<UserMembersCalender>,
   ) {}
   async create(createCalenderDto: CreateCalenderDto) {
     try {
@@ -39,11 +42,14 @@ export class CalendersService {
   }
 
   findAll() {
-    return this.calenderRepository.find();
+    return this.calenderRepository.find({
+      order: { createdDate: 'DESC' },
+      relations: ['members'],
+    });
   }
 
   async findOne(id: string) {
-    const calender = await this.calenderRepository.findBy({ id: id });
+    const calender = await this.calenderRepository.findBy({ id: +id });
     if (!calender) {
       throw new NotFoundException();
     }
@@ -61,10 +67,11 @@ export class CalendersService {
   }
 
   async update(id: string, updateCalenderDto: UpdateCalenderDto) {
-    const calender = await this.calenderRepository.findBy({ id: id });
+    const calender = await this.calenderRepository.findOneBy({ id: +id });
     if (!calender) {
       throw new NotFoundException();
     }
+    updateCalenderDto.id = calender.id;
     const updatedCar = {
       ...calender,
       ...updateCalenderDto,
@@ -74,63 +81,67 @@ export class CalendersService {
   }
 
   async remove(id: string) {
-    const calender = await this.calenderRepository.findBy({ id: id });
+    const calender = await this.calenderRepository.findOneBy({ id: +id });
     return this.calenderRepository.remove(calender);
   }
   async addMembers(id: string, updateCalenderDto: UpdateCalenderDto) {
-    const calender = await this.calenderRepository.findBy({ id: id });
+    const calender = await this.calenderRepository.findOneBy({ id: +id });
     if (!calender) {
-      throw new NotFoundException();
+      throw new NotFoundException('Not found Calender with id ' + id);
     }
     // carete updated object
     const updatedMember = new Calender();
 
-    if (updateCalenderDto.members.length > 0) {
+    updatedMember.id = calender.id;
+    updatedMember.members = [];
+    if (updateCalenderDto.members) {
       for (const member of updateCalenderDto.members) {
-        const user = await this.userRepository.findOne({
-          where: { email: member },
-        });
+        const user = await this.userRepository.findOneBy({ email: member });
         if (user) {
-          updatedMember.members.push(user);
+          //check  repeatUser
+          const repeatedUser = await this.uMCRepository.findOneBy({
+            calender: { id: calender.id },
+            user: { id: user.id },
+          });
+          console.log('User repeated', repeatedUser);
+          if (!repeatedUser) {
+            const umc = new UserMembersCalender();
+            umc.user = user;
+            umc.calender = calender;
+            const umcSaved = await this.uMCRepository.save(umc);
+            updatedMember.members.push(umcSaved);
+          }
+          
         }
       }
     }
-    const updateCalenderMember = {
-      ...calender,
-      ...updatedMember,
-    };
-    return this.calenderRepository.save(updateCalenderMember);
+    if (updatedMember.members.length >0) {
+      const updateCalenderMember = {
+        ...calender,
+        ...updatedMember,
+      };
+      console.log(updateCalenderMember);
+      return this.calenderRepository.save(updateCalenderMember);
+    }
   }
 
   async deleteMembers(id: string, updateCalenderDto: UpdateCalenderDto) {
-    const calender = await this.calenderRepository.findOneBy({ id: id });
+    const calender = await this.calenderRepository.findOneBy({ id: +id });
     if (!calender) {
       throw new NotFoundException();
     }
-    // carete updated object
-    const updatedMember = new Calender();
-
+    const umcs = await this.uMCRepository.find({where:{calender:{id: +calender.id}},relations:['user']});
     if (updateCalenderDto.members.length > 0) {
       for (const member of updateCalenderDto.members) {
-        const user = await this.userRepository.findOne({
-          where: { email: member },
-        });
-        if (user) {
-          const emailToDelete = member;
-          const index = calender.members.findIndex(
-            (u) => u.email === emailToDelete,
-          );
-          if (index !== -1) {
-            calender.members.splice(index, 1);
-          }
-        }
+        const index = umcs.find(umc=> umc.user.email === member);
+        await this.uMCRepository.remove(index);
       }
     }
-    const updateCalenderMember = {
-      ...updatedMember,
-      ...calender,
-
-    };
-    return this.calenderRepository.save(updateCalenderMember);
+    // updatedMember.members = umcs;
+    // const updateCalenderMember = {
+    //   ...updatedMember,
+    //   ...calender,
+    // };
+    return this.calenderRepository.findOne({where:{id:calender.id},relations:['members','members.user']});
   }
 }

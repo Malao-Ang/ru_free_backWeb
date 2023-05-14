@@ -1,4 +1,5 @@
 import { _Event } from 'src/events/entities/event.entity';
+import { UserMembersCalender } from 'src/user_members_calender/entities/user_members_calender.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
@@ -15,18 +16,18 @@ import {
 
 @Entity()
 export class Calender {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
+
   @Column()
   name: string;
-  @ManyToOne(()=> User,(user)=> user.calenders,null)
+  @ManyToOne(() => User, (user) => user.calenders, null)
   owner: User;
 
-  @ManyToMany(()=>User,(user)=> user.id,null)
-  @JoinTable()
-  members: User[];
-  
-  @OneToMany(()=> _Event,(eve)=> eve.calender,null)
+  @OneToMany(() => UserMembersCalender, (umc) => umc.calender)
+  members: UserMembersCalender[];
+
+  @OneToMany(() => _Event, (eve) => eve.calender, null)
   events: _Event[];
   @CreateDateColumn()
   createdDate: Date;

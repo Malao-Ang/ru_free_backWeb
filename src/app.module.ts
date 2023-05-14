@@ -10,6 +10,9 @@ import { CalendersModule } from './calenders/calenders.module';
 import { EventsModule } from './events/events.module';
 import { Calender } from './calenders/entities/calender.entity';
 import { _Event } from './events/entities/event.entity';
+import { UserMembersCalender } from './user_members_calender/entities/user_members_calender.entity';
+import { UserMembersCalenderModule } from './user_members_calender/user_members_calender.module';
+
 
 @Module({
   imports: [
@@ -21,13 +24,14 @@ import { _Event } from './events/entities/event.entity';
       username: 'urfree',
       password: 'pass1234',
       database: 'rufree',
-      entities: [User,Calender,_Event],
+      entities: [User,Calender,_Event,UserMembersCalender],
       synchronize: true,
     }),
     UsersModule,
     PassportModule.register({session: true}),
     CalendersModule,
     EventsModule,
+    UserMembersCalenderModule,
   ],
   controllers: [AppController],
   providers: [AppService],

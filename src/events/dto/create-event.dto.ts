@@ -2,7 +2,7 @@ import { IsNotEmpty, MinLength } from "class-validator";
 
 export class CreateEventDto {
  
-    id?: string;
+    id?:  number;
     title?: string;
     startDate?: Date;
     endDate?: Date;
