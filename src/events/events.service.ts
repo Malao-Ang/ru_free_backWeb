@@ -13,6 +13,8 @@ export class EventsService {
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Calender)
     private calenderRepository: Repository<Calender>,
+    @InjectRepository(_Event)
+    private eventRepository: Repository<_Event>,
   ) {}
   async create(createEventDto: CreateEventDto) {
     const calender = await this.calenderRepository.findOneBy({
@@ -42,15 +44,31 @@ export class EventsService {
     return `This action returns all events`;
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return `This action returns a #${id} event`;
   }
+  async findEventByCalender(idCar: string) {
+    const calenderEvents = await this.calenderRepository.findOneBy({ id: idCar });
+    if (!calenderEvents) {
+      throw new NotFoundException();
+    }
 
-  update(id: number, updateEventDto: UpdateEventDto) {
-    return `This action updates a #${id} event`;
+    return calenderEvents.events;
   }
 
-  remove(id: number) {
+  async update(id: string, updateEventDto: UpdateEventDto) {
+    const event = await this.eventRepository.findOneBy({ id: id });
+    if(!event) {
+      throw new NotFoundException();
+    }
+    const updatedEvent = {
+      ...event,
+      ...updateEventDto
+    }
+    return this.eventRepository.save(updatedEvent);
+  }
+
+  remove(id: string) {
     return `This action removes a #${id} event`;
   }
 }
