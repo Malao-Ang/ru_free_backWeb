@@ -68,7 +68,11 @@ export class EventsService {
     return this.eventRepository.save(updatedEvent);
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} event`;
+  async remove(id: string) {
+    const event = await this.eventRepository.findOneBy({ id: id });
+    if(!event) {
+      throw new NotFoundException();
+    }
+    return this.eventRepository.remove(event);
   }
 }
