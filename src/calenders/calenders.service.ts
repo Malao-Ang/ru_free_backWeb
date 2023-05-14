@@ -77,4 +77,28 @@ export class CalendersService {
     const calender = await this.calenderRepository.findBy({ id: id });
     return this.calenderRepository.remove(calender);
   }
+  async addMembers(id: string, updateCalenderDto: UpdateCalenderDto) {
+    const calender = await this.calenderRepository.findBy({ id: id });
+    if (!calender) {
+      throw new NotFoundException();
+    }
+    // carete updated object
+    const updatedMember = new Calender();
+
+    if (updateCalenderDto.members.length > 0) {
+      for (const member of updateCalenderDto.members) {
+        const user = await this.userRepository.findOne({
+          where: { email: member },
+        });
+        if (user) {
+          updatedMember.members.push(user);
+        }
+      }
+    }
+    const updateCalenderMember = {
+      ...calender,
+      ...updatedMember,
+    };
+    return this.calenderRepository.save(updateCalenderMember);
+  }
 }
