@@ -66,4 +66,8 @@ export class CalendersController {
   findFriendInCalender(@Param('id') id: string){
     return this.calendersService.findFriendInCalender(+id);
   }
+  @Get('/join/:code')
+  joinGroupByCode(@Param('code') code: string,@Body() updateCalenderDto: UpdateCalenderDto){
+    return this.calendersService.joinGroupByCode(code,updateCalenderDto);
+  }
 }

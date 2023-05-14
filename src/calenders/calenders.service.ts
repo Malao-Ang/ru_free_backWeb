@@ -163,4 +163,48 @@ export class CalendersService {
     }
     return calender;
   }
+
+  async joinGroupByCode(
+    groupCode: string,
+    updateCalenderDto: UpdateCalenderDto,
+  ) {
+    const calender = await this.calenderRepository.findOne({
+      where: { code: groupCode },
+    });
+    if (!calender) {
+      throw new NotFoundException();
+    }
+    const updatedMember = new Calender();
+
+    updatedMember.id = calender.id;
+    updatedMember.members = [];
+    if (updateCalenderDto.members) {
+      for (const member of updateCalenderDto.members) {
+        const user = await this.userRepository.findOneBy({ email: member });
+        if (user) {
+          //check  repeatUser
+          const repeatedUser = await this.uMCRepository.findOneBy({
+            calender: { id: calender.id },
+            user: { id: user.id },
+          });
+          console.log('User repeated', repeatedUser);
+          if (!repeatedUser) {
+            const umc = new UserMembersCalender();
+            umc.user = user;
+            umc.calender = calender;
+            const umcSaved = await this.uMCRepository.save(umc);
+            updatedMember.members.push(umcSaved);
+          }
+        }
+      }
+    }
+    if (updatedMember.members.length > 0) {
+      const updateCalenderMember = {
+        ...calender,
+        ...updatedMember,
+      };
+      console.log(updateCalenderMember);
+      return this.calenderRepository.save(updateCalenderMember);
+    }
+  }
 }
