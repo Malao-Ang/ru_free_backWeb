@@ -207,4 +207,20 @@ export class CalendersService {
       return this.calenderRepository.save(updateCalenderMember);
     }
   }
+
+  findCalenderMember(email: string) {
+    const calender = this.calenderRepository.find({
+      where: { members: { user: { email: email } } },
+    });
+    return calender;
+  }
+  findCalenderByCode(code: string) {
+    const calender = this.calenderRepository.findOne({
+      where: { code: code },
+    });
+    if (!calender) {
+      throw new NotFoundException();
+    }
+    return calender;
+  }
 }
