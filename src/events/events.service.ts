@@ -30,8 +30,7 @@ export class EventsService {
     _event.freeStatus = createEventDto.freeStatus;
     _event.title = createEventDto.title;
     _event.user = user;
-    _event.startDate = new Date(createEventDto.startDate);
-    _event.endDate = new Date(createEventDto.endDate);
+    _event.start = new Date(createEventDto.start);
 
     if (!calender) {
       throw new NotFoundException();

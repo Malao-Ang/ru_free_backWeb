@@ -19,9 +19,8 @@ export class _Event {
   @Column()
   title: string;
   @Column()
-  startDate: Date;
-  @Column()
-  endDate: Date;
+  start: Date;
+
   @Column()
   display: string;
   @ManyToOne(()=> User,(user)=>user.events)

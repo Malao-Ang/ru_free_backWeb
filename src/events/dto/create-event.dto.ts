@@ -12,8 +12,7 @@ export class CreateEventDto {
   id?: number;
   @IsString()
   title?: string;
-  startDate?: Date;
-  endDate?: Date;
+  start?: string;
   @IsString()
   display?: string;
   @IsString()

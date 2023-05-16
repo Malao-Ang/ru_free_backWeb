@@ -49,7 +49,10 @@ export class CalendersService {
   }
 
   async findOne(id: string) {
-    const calender = await this.calenderRepository.findBy({ id: +id });
+    const calender = await this.calenderRepository.findOne({
+      where: { id: +id },
+      relations: ['events.user', 'members.user','owner'],
+    });
     if (!calender) {
       throw new NotFoundException();
     }
@@ -169,31 +172,34 @@ export class CalendersService {
     updateCalenderDto: UpdateCalenderDto,
   ) {
     const calender = await this.calenderRepository.findOne({
-      where: { code: groupCode },
+      where: { code: groupCode },relations:['owner']
     });
     if (!calender) {
       throw new NotFoundException();
     }
+
     const updatedMember = new Calender();
 
     updatedMember.id = calender.id;
     updatedMember.members = [];
     if (updateCalenderDto.members) {
       for (const member of updateCalenderDto.members) {
-        const user = await this.userRepository.findOneBy({ email: member });
-        if (user) {
-          //check  repeatUser
-          const repeatedUser = await this.uMCRepository.findOneBy({
-            calender: { id: calender.id },
-            user: { id: user.id },
-          });
-          console.log('User repeated', repeatedUser);
-          if (!repeatedUser) {
-            const umc = new UserMembersCalender();
-            umc.user = user;
-            umc.calender = calender;
-            const umcSaved = await this.uMCRepository.save(umc);
-            updatedMember.members.push(umcSaved);
+        if (calender.owner.email !== member) {
+          const user = await this.userRepository.findOneBy({ email: member });
+          if (user) {
+            //check  repeatUser
+            const repeatedUser = await this.uMCRepository.findOneBy({
+              calender: { id: calender.id },
+              user: { id: user.id },
+            });
+            console.log('User repeated', repeatedUser);
+            if (!repeatedUser) {
+              const umc = new UserMembersCalender();
+              umc.user = user;
+              umc.calender = calender;
+              const umcSaved = await this.uMCRepository.save(umc);
+              updatedMember.members.push(umcSaved);
+            }
           }
         }
       }
