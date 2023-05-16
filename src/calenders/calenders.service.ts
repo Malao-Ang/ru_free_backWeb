@@ -6,6 +6,7 @@ import { Calender } from './entities/calender.entity';
 import { Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { UserMembersCalender } from 'src/user_members_calender/entities/user_members_calender.entity';
+import { _Event } from 'src/events/entities/event.entity';
 
 @Injectable()
 export class CalendersService {
@@ -16,6 +17,8 @@ export class CalendersService {
     private userRepository: Repository<User>,
     @InjectRepository(UserMembersCalender)
     private uMCRepository: Repository<UserMembersCalender>,
+    @InjectRepository(_Event)
+    private eventRepository: Repository<_Event>,
   ) {}
   async create(createCalenderDto: CreateCalenderDto) {
     try {
@@ -51,7 +54,7 @@ export class CalendersService {
   async findOne(id: string) {
     const calender = await this.calenderRepository.findOne({
       where: { id: +id },
-      relations: ['events.user', 'members.user','owner'],
+      relations: ['events.user', 'members.user', 'owner'],
     });
     if (!calender) {
       throw new NotFoundException();
@@ -73,7 +76,9 @@ export class CalendersService {
   }
 
   async update(id: string, updateCalenderDto: UpdateCalenderDto) {
-    const calender = await this.calenderRepository.findOneBy({ id: +id });
+    const calender = await this.calenderRepository.findOne({
+      where: { id: +id },
+    });
     if (!calender) {
       throw new NotFoundException();
     }
@@ -87,7 +92,13 @@ export class CalendersService {
   }
 
   async remove(id: string) {
-    const calender = await this.calenderRepository.findOneBy({ id: +id });
+    const calender = await this.calenderRepository.findOne({
+      where: { id: +id },
+      relations: ['events'],
+    });
+    for (let i = 0; i < calender.events.length; i++) {
+      await this.eventRepository.remove(calender.events[i]);
+    }
     return this.calenderRepository.remove(calender);
   }
   async addMembers(id: string, updateCalenderDto: UpdateCalenderDto) {
@@ -145,11 +156,17 @@ export class CalendersService {
         await this.uMCRepository.remove(index);
       }
     }
-    // updatedMember.members = umcs;
-    // const updateCalenderMember = {
-    //   ...updatedMember,
-    //   ...calender,
-    // };
+    const events = await this.eventRepository.find({
+      where: {
+        calender: { id: +calender.id },
+        user: { email: umcs[0].user.email },
+      },
+    });
+
+    for (let i = 0; i < events.length; i++) {
+      await this.eventRepository.remove(events[i]);
+    }
+
     return this.calenderRepository.findOne({
       where: { id: calender.id },
       relations: ['members', 'members.user'],
@@ -172,7 +189,8 @@ export class CalendersService {
     updateCalenderDto: UpdateCalenderDto,
   ) {
     const calender = await this.calenderRepository.findOne({
-      where: { code: groupCode },relations:['owner']
+      where: { code: groupCode },
+      relations: ['owner'],
     });
     if (!calender) {
       throw new NotFoundException();
