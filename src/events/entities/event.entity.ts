@@ -18,8 +18,8 @@ export class _Event {
 
   @Column()
   title: string;
-  @Column()
-  start: Date;
+  @Column({ type: 'date' })
+  start: string;
 
   @Column()
   display: string;
