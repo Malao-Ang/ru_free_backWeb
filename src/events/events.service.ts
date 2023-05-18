@@ -103,4 +103,21 @@ export class EventsService {
       console.log(e);
     }
   }
+
+  async findEventsByDate(id:string,updateEventDto: UpdateEventDto) {
+    try {
+      const date_ = new Date(updateEventDto.start).toISOString().split('T')[0];
+      const eve = await this.eventRepository.find({
+        where: {
+          start: date_,
+          calender: { id: +id },
+        },
+        relations: ['user'],
+      });
+
+      return eve;
+    } catch (e) {
+      console.log(e);
+    }
+  }
 }

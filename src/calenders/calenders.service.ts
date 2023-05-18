@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateCalenderDto } from './dto/create-calender.dto';
 import { UpdateCalenderDto } from './dto/update-calender.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -51,7 +55,7 @@ export class CalendersService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, email: string) {
     const calender = await this.calenderRepository.findOne({
       where: { id: +id },
       relations: ['events.user', 'members.user', 'owner'],
@@ -59,7 +63,18 @@ export class CalendersService {
     if (!calender) {
       throw new NotFoundException();
     }
-    return calender;
+    // console.log(email);
+    const index =  calender.members.findIndex(
+      (member) => member.user.email === email,
+    );
+
+    if (index < 0) {
+      // console.log(`Could not find `)
+      // console.log(index)
+      throw new ForbiddenException();
+    } else {
+      return calender;
+    }
   }
 
   async findByEmail(email: string) {

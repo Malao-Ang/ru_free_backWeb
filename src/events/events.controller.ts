@@ -10,6 +10,7 @@ import {
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
+import { UpdateCalenderDto } from 'src/calenders/dto/update-calender.dto';
 
 @Controller('events')
 export class EventsController {
@@ -43,5 +44,9 @@ export class EventsController {
   findEventByCalender(@Param('id') id: string) {
     // return this.eventsService.findEventByCalender(id);
     return this.eventsService.findEventByIdCalender(+id);
+  }
+  @Post('date/:id')
+  findEventsByDate(@Param('id') id: string,@Body() updateCalenderDto:UpdateCalenderDto) {
+    return this.eventsService.findEventsByDate(id,updateCalenderDto)
   }
 }

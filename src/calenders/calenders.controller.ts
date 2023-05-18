@@ -6,10 +6,13 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { CalendersService } from './calenders.service';
 import { CreateCalenderDto } from './dto/create-calender.dto';
 import { UpdateCalenderDto } from './dto/update-calender.dto';
+import { Request } from 'express';
 
 @Controller('calenders')
 export class CalendersController {
@@ -25,9 +28,10 @@ export class CalendersController {
     return this.calendersService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.calendersService.findOne(id);
+  @Post(':id')
+  findOne(@Param('id') id: string, @Body() email:{email: string}) {
+    // console.log(email);
+    return this.calendersService.findOne(id,email.email);
   }
 
   @Patch(':id')
@@ -51,7 +55,7 @@ export class CalendersController {
     return this.calendersService.addMembers(id, updateCalenderDto);
   }
   @Get('/email/:email')
-  findCalenderByEmail(@Param('email') email: string){
+  findCalenderByEmail(@Param('email') email: string) {
     return this.calendersService.findByEmail(email);
   }
 
@@ -63,21 +67,24 @@ export class CalendersController {
     return this.calendersService.deleteMembers(id, updateCalenderDto);
   }
   @Get('/friend/:id')
-  findFriendInCalender(@Param('id') id: string){
+  findFriendInCalender(@Param('id') id: string) {
     return this.calendersService.findFriendInCalender(+id);
   }
   @Patch('/join/:code')
-  joinGroupByCode(@Param('code') code: string,@Body() updateCalenderDto: UpdateCalenderDto){
-    return this.calendersService.joinGroupByCode(code,updateCalenderDto);
+  joinGroupByCode(
+    @Param('code') code: string,
+    @Body() updateCalenderDto: UpdateCalenderDto,
+  ) {
+    return this.calendersService.joinGroupByCode(code, updateCalenderDto);
   }
 
   @Get('/joined/:email')
-  findCalenderMember(@Param('email') email: string){
+  findCalenderMember(@Param('email') email: string) {
     return this.calendersService.findCalenderMember(email);
   }
 
   @Get('/code/:code')
-  findCalenderByCode(@Param('code') code: string){
+  findCalenderByCode(@Param('code') code: string) {
     return this.calendersService.findCalenderByCode(code);
   }
 }
