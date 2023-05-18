@@ -63,6 +63,9 @@ export class CalendersService {
     if (!calender) {
       throw new NotFoundException();
     }
+    if(calender.owner.email === email){
+      return calender;
+    }
     // console.log(email);
     const index =  calender.members.findIndex(
       (member) => member.user.email === email,
