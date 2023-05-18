@@ -18,10 +18,18 @@ export class EventsService {
   ) {}
   async create(createEventDto: CreateEventDto) {
     const date_ = new Date(createEventDto.start).toISOString().split('T')[0];
-    const eve =  await this.eventRepository.find({where:{user:{email:createEventDto.email},start: date_,calender:{id:createEventDto.idCalender}},relations:['user']});
-  
-    if( eve.length >0){
-       throw new Error();
+    const eve = await this.eventRepository.findOne({
+      where: {
+        user: { email: createEventDto.email },
+        start: date_,
+        calender: { id: createEventDto.idCalender },
+      },
+      relations: ['user'],
+    });
+
+    if (eve) {
+      eve.freeStatus = createEventDto.freeStatus;
+      return this.eventRepository.save(eve);
     }
 
     const calender = await this.calenderRepository.findOneBy({
@@ -95,5 +103,4 @@ export class EventsService {
       console.log(e);
     }
   }
-
 }
