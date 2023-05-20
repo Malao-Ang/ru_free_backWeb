@@ -39,7 +39,7 @@ export class AuthController {
     console.log(request.user)
     // return request.user['profile']
     response.redirect(
-      `https://wangpa.vercel.app/homepage/?email=${request.user['profile']['emails'][0]['value']}&name=${request.user['profile']['displayName']}&picture=${request.user['profile']['photos'][0]['value']}&token=${request.user['accessToken']}` ,
+      `https://wangpa-mrfe2360i-malao-ang.vercel.app/homepage/?email=${request.user['profile']['emails'][0]['value']}&name=${request.user['profile']['displayName']}&picture=${request.user['profile']['photos'][0]['value']}&token=${request.user['accessToken']}` ,
     );
   }
 
