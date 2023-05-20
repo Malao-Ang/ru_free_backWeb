@@ -23,6 +23,6 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
  
-  await app.listen( 'https://rufreebackweb-production.up.railway.app' );
+  await app.listen( process.env.PORT );
 }
 bootstrap();
