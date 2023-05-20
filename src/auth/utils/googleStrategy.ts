@@ -12,7 +12,7 @@ export class googleStrategy extends PassportStrategy(Strategy, 'google') {
       clientID:
         process.env.CLIENTID,
       clientSecret: process.env.CLIENTSECRET,
-      callbackURL: 'http://localhost:3000/api/auth/google/redirect',
+      callbackURL: 'https://rufreebackweb-production.up.railway.app/api/auth/google/redirect'|| 'http://localhost:3000/api/auth/google/redirect',
       scope: ['profile', 'email'],
     });
   }
