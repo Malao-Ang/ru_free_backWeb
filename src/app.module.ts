@@ -12,18 +12,21 @@ import { Calender } from './calenders/entities/calender.entity';
 import { _Event } from './events/entities/event.entity';
 import { UserMembersCalender } from './user_members_calender/entities/user_members_calender.entity';
 import { UserMembersCalenderModule } from './user_members_calender/user_members_calender.module';
+import { env } from 'process'
+import { ConfigModule } from '@nestjs/config';
 
 
 @Module({
   imports: [
+    ConfigModule.forRoot() ,
     AuthModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'urfree',
-      password: 'pass1234',
-      database: 'rufree',
+      host: process.env.NAME,
+      port: parseInt(process.env.APP_PORT),
+      username: process.env.USERNAME,
+      password: process.env.PASSWORD,
+      database: process.env.DATABASENAME,
       entities: [User,Calender,_Event,UserMembersCalender],
       synchronize: true,
     }),
