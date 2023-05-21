@@ -6,6 +6,7 @@ import { Like, Raw, Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Calender } from 'src/calenders/entities/calender.entity';
 import { _Event } from './entities/event.entity';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class EventsService {
@@ -119,5 +120,23 @@ export class EventsService {
     } catch (e) {
       console.log(e);
     }
+  }
+  @Cron(CronExpression.EVERY_DAY_AT_11PM)
+  async deleteOldEvent() {
+    const date_ = new Date();
+    const year = date_.getFullYear();
+    const month = String(date_.getMonth() + 1).padStart(2, '0');
+    const day = String(date_.getDate() - 1).padStart(2, '0');
+
+    const formattedDate = `${year}-${month}-${day}`;
+    // console.log("Hello");.
+    const events = await this.eventRepository.find({
+      where: { start: formattedDate },
+    });
+    for (const event of events) {
+      await this.eventRepository.remove(event);
+      console.log(event);
+    }
+    console.log('delete completed');
   }
 }
